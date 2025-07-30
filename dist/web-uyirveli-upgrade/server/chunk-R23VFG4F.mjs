@@ -1,0 +1,2 @@
+import './polyfills.server.mjs';
+import{d as p}from"./chunk-IRLGTZDS.mjs";import{Oa as r,Pa as n,Sb as d,V as t,Xa as a,db as m}from"./chunk-Z3X67S6Q.mjs";import"./chunk-5XUXGTUW.mjs";var s=class o{static \u0275fac=function(e){return new(e||o)};static \u0275cmp=t({type:o,selectors:[["app-order"]],standalone:!0,features:[m],decls:2,vars:0,template:function(e,c){e&1&&(r(0,"p"),a(1,"order works!"),n())},dependencies:[d,p]})};export{s as OrderComponent};
