@@ -1,0 +1,49 @@
+<div class="container mt-3 overscroll">
+  <h4>Order List</h4>
+  <div class="table-overflow">
+    <table class="table table-striped">
+      <thead>
+      <tr>
+        <th>Order ID</th>
+        <th>Customer ID</th>
+        <th>Order Status</th>
+        <th>Delivery Status</th>
+        <th>Payment Status</th>
+        <th>Created By</th>
+        <th>Status</th>
+        <th colspan="2" style="text-align:center">Item</th>
+        <th>Action</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let order of paginatedOrders; let i = index">
+        <td>{{ order.ORD_OrderID }}</td>
+        <td>{{ order.ORD_CUS_CustomerID }}</td>
+        <td>{{ order.ORD_OrderStatus }}</td>
+        <td>{{ order.ORD_DeliveryStatus }}</td>
+        <td>{{ order.ORD_PaymentStatus }}</td>
+        <td>{{ order.ORD_CreatedAt | date: 'dd-MM-yyyy'}}</td>
+        <td><button class="btn btn-sm btn-secondary me-2" (click)="editOrderStatus(order)">Edit</button></td>
+        <td><button class="btn btn-sm btn-success me-2">Add</button></td>
+        <td><button class="btn btn-sm btn-secondary me-2">Edit</button></td>
+        <td><button class="btn btn-sm btn-danger me-2">Cancel</button></td>
+          <!--<button class="btn btn-sm btn-secondary me-2" (click)="openEditCustomer(customer)">Edit</button>-->
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <!-- Pagination -->
+  <nav class="mt-3">
+    <ul class="pagination justify-content-center">
+      <li class="page-item" [class.disabled]="currentPage === 1">
+        <button class="page-link" (click)="changePage(currentPage - 1)">Previous</button>
+      </li>
+      <li class="page-item disabled"> <span class="page-link">
+          Page {{ currentPage }} of {{ totalPages }}
+        </span> </li>
+      <li class="page-item" [class.disabled]="currentPage === totalPages">
+        <button class="page-link" (click)="changePage(currentPage + 1)">Next</button>
+      </li>
+    </ul>
+  </nav>
+</div>
