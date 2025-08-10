@@ -230,6 +230,106 @@ app.put('/orders/:id', (req, res) => {
   });
 });
 
+app.put('/orders/payment/:id', (req, res) => {
+  const id = req.params.id;
+  const order = req.body;
+
+  const sql = `
+    UPDATE tbl_order_info SET
+      ORD_OrderAmount = ?,
+      ORD_Discount = ?,
+      ORD_Total = ?,
+      ORD_LastModifiedBy = ?
+    WHERE ORD_OrderID = ?
+  `;
+
+  const values = [
+    order.ORD_OrderAmount,
+    order.ORD_Discount,
+    order.ORD_Total,
+    order.ORD_LastModifiedBy,
+    id
+  ];
+
+  db.query(sql, values, (err) => {
+    if (err) return res.status(500).send(err);
+    res.json({ message: 'Order totals updated successfully' });
+  });
+});
+
+
+// List products List
+app.get('/products', (req, res) => {
+  db.query('SELECT * FROM tbl_products WHERE PRD_Status = "Active"', (err, results) => {
+    if (err) return res.status(500).send(err);
+    res.json(results);
+  });
+});
+
+// Add Order Payment
+app.post('/order-payments', (req, res) => {
+  const {
+    ORP_ORD_OrderID,
+    ORP_PaymentDate,
+    ORP_PaymentAmount,
+    ORP_PaymentMode,
+    ORP_ReferenceNumber,
+    ORP_Remarks,
+    ORP_CreatedBy
+  } = req.body;
+
+  const sql = `INSERT INTO tbl_order_payments (ORP_ORD_OrderID, ORP_PaymentDate, ORP_PaymentAmount, ORP_PaymentMode, ORP_ReferenceNumber, ORP_Remarks, ORP_CreatedBy)
+               VALUES (?, ?, ?, ?, ?, ?, ?)`;
+
+  const values = [ORP_ORD_OrderID, ORP_PaymentDate, ORP_PaymentAmount, ORP_PaymentMode, ORP_ReferenceNumber, ORP_Remarks, ORP_CreatedBy];
+
+  db.query(sql, values, (err, result) => {
+    if (err) return res.status(500).send(err);
+    res.status(201).json({ message: 'Payment recorded successfully', paymentId: result.insertId });
+  });
+});
+
+// List Payments for an Order
+app.get('/order-payments/order/:orderId', (req, res) => {
+  const orderId = req.params.orderId;
+  db.query('SELECT * FROM tbl_order_payments WHERE ORP_ORD_OrderID = ?', [orderId], (err, results) => {
+    if (err) return res.status(500).send(err);
+    res.json(results);
+  });
+});
+
+
+app.get('/orders/:id/details', (req, res) => {
+  const id = req.params.id;
+
+  db.query('SELECT * FROM tbl_order_info WHERE ORD_OrderID = ?', [id], (err, orderResult) => {
+    if (err) return res.status(500).send(err);
+    if (orderResult.length === 0) return res.status(404).json({ message: 'Order not found' });
+
+    const order = orderResult[0];
+
+    db.query('SELECT * FROM tbl_customer_info WHERE CUS_CustomerID = ?', [order.ORD_CUS_CustomerID], (err, customerResult) => {
+      if (err) return res.status(500).send(err);
+
+      db.query('SELECT * FROM tbl_order_items WHERE OIT_ORD_OrderID = ?', [id], (err, itemResults) => {
+        if (err) return res.status(500).send(err);
+
+        db.query('SELECT * FROM tbl_order_payments WHERE ORP_ORD_OrderID = ?', [id], (err, paymentResults) => {
+          if (err) return res.status(500).send(err);
+
+          res.json({
+            order,
+            customer: customerResult[0] || null,
+            items: itemResults,
+            payments: paymentResults
+          });
+        });
+      });
+    });
+  });
+});
+
+
 // ✅ Root route for render homepage
 app.get('/', (req, res) => {
   res.send('✅ Uyirveli Backend API is Live!');
