@@ -12,7 +12,7 @@
         <th>Created By</th>
         <th>Status</th>
         <th colspan="2" style="text-align:center">Item</th>
-        <th>Action</th>
+        <th colspan="2" style="text-align:center">Action</th>
       </tr>
       </thead>
       <tbody>
@@ -24,10 +24,10 @@
         <td>{{ order.ORD_PaymentStatus }}</td>
         <td>{{ order.ORD_CreatedAt | date: 'dd-MM-yyyy'}}</td>
         <td><button class="btn btn-sm btn-secondary me-2" (click)="editOrderStatus(order)">Edit</button></td>
-        <td><button class="btn btn-sm btn-success me-2">Add</button></td>
-        <td><button class="btn btn-sm btn-secondary me-2">Edit</button></td>
-        <td><button class="btn btn-sm btn-danger me-2">Cancel</button></td>
-          <!--<button class="btn btn-sm btn-secondary me-2" (click)="openEditCustomer(customer)">Edit</button>-->
+        <td><button class="btn btn-sm btn-success me-2" (click)="openProductModal(order)">Add</button></td>
+        <td><button class="btn btn-sm btn-secondary me-2" (click)="openProductModal(order,true)">Edit</button></td>
+        <td><button class="btn btn-sm btn-danger me-2" (click)="openPayment(order)">Payment</button></td>
+        <td><button class="btn btn-sm btn-success me-2" (click)="viewPayment(order)">View</button></td>
       </tr>
       </tbody>
     </table>
@@ -47,3 +47,54 @@
     </ul>
   </nav>
 </div>
+
+
+<!-- Product Modal (Place this at the bottom of your file) -->
+<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ isEditMode ? 'Edit Products' : 'Add Products' }}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Move your productForm HTML HERE -->
+        <div *ngFor="let item of productForm; let i = index" class="row align-items-end mb-3">
+          <div class="col-md-3">
+            <label>Product</label>
+            <select class="form-select" [(ngModel)]="item.productId" [name]="'productId' + i">
+              <option *ngFor="let p of productList" [value]="p.PRD_ProductID">{{ p.PRD_ProductName }}</option>
+            </select>
+          </div>
+          <div class="col-md-1">
+            <label>Qty</label>
+            <input type="number" class="form-control" [(ngModel)]="item.quantity" (input)="calculateTotal(i)" [name]="'quantity' + i">
+          </div>
+          <div class="col-md-2">
+            <label>Price</label>
+            <input type="number" class="form-control" [(ngModel)]="item.price" (input)="calculateTotal(i)" [name]="'price' + i">
+          </div>
+          <div class="col-md-2">
+            <label>Discount</label>
+            <input type="number" class="form-control" [(ngModel)]="item.discount" (input)="calculateTotal(i)" [name]="'discount' + i">
+          </div>
+          <div class="col-md-2">
+            <label>Total</label>
+            <input type="number" class="form-control" [value]="item.total" readonly [name]="'total' + i">
+          </div>
+          <div class="col-md-2 d-flex">
+            <button class="btn btn-success me-2" (click)="addItem()">+</button>
+            <button class="btn btn-danger" (click)="removeItem(i)" *ngIf="productForm.length > 1">−</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" (click)="saveProducts()">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-payment-modal #paymentModal [orderId]="selectedOrderId"  (onSave)="handlePaymentSave($event)"></app-payment-modal>
+
+<app-order-details #OrderDetailsComponent [orderId]="selectedOrderId"></app-order-details>

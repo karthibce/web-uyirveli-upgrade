@@ -1,18 +1,18 @@
 <div class="modal fade show" *ngIf="showModal" style="display:block; background: rgba(0,0,0,0.5);">
   <div class="modal-dialog">
     <div class="modal-content">
-
       <div class="modal-header">
         <h5 class="modal-title">Payment Details</h5>
         <button type="button" class="btn-close" (click)="close()"></button>
       </div>
-
       <div class="modal-body">
+        <!--<div class="mb-3">
+          <label>Total Amount : Rs {{ totalAmount | currency:'INR':'symbol':'1.0-0' }}</label>
+        </div>-->
         <div class="mb-3">
           <label>Amount</label>
           <input type="number" class="form-control" [(ngModel)]="amount" />
         </div>
-
         <div class="mb-3">
           <label>Paymode</label>
           <select class="form-control" [(ngModel)]="paymode">
@@ -22,18 +22,18 @@
             <option value="UPI">UPI</option>
           </select>
         </div>
-
+        <div class="mb-3">
+          <label>Reference Number</label>
+          <input type="number" class="form-control" [(ngModel)]="referenceno" /> </div>
         <div class="mb-3">
           <label>Remark</label>
           <textarea class="form-control" [(ngModel)]="remark"></textarea>
         </div>
       </div>
-
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" (click)="close()">Cancel</button>
         <button type="button" class="btn btn-primary" (click)="save()">Save</button>
       </div>
-
     </div>
   </div>
 </div>
